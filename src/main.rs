@@ -68,12 +68,17 @@ fn spawn(cmd: &str) {
     println!("Executing: {}", cmd);
     let mut split = cmd.split_whitespace();
 
-    Command::new(split.next().unwrap())
+    let output = Command::new(split.next().unwrap())
         .args(split)
-        .stdout(process::Stdio::piped())
+        .stdout(process::Stdio::inherit())
         .stderr(process::Stdio::inherit())
         .spawn()
         .unwrap()
         .wait_with_output()
         .unwrap();
+    if let Some(code) = output.status.code() {
+        std::process::exit(code);
+    } else if !output.status.success() {
+        std::process::exit(-1);
+    }
 }
