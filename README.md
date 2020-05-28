@@ -1,4 +1,4 @@
-## a-s-dev
+## asdev
 
 > Application Services Dev CLI - https://github.com/mozilla/application-services
 
