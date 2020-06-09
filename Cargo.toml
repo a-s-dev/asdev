@@ -13,3 +13,7 @@ description = "a-s-dev"
 [dependencies]
 dialoguer = "0.5.0"
 clap = "2.33"
+
+[[bin]]
+name = "cargo-asdev"
+path = "src/main.rs"
