@@ -92,19 +92,25 @@ const COMMANDS: &[(&str, (&str, &str))] = &[
 fn main() {
     let map: HashMap<&str, (&str, &str)> = COMMANDS.iter().cloned().collect();
     let matches = App::new(env!("CARGO_PKG_NAME"))
-        .about("Helps you navigate the Application Services repository")
-        .author("Application Services Team")
-        .version(env!("CARGO_PKG_VERSION"))
-        .subcommands(
-            COMMANDS
-                .iter()
-                .map(|(key_word, (title, _cmd))| SubCommand::with_name(key_word).about(*title)),
+        .bin_name("cargo")
+        .subcommand(
+            SubCommand::with_name("asdev")
+                .about("Helps you navigate the Application Services repository")
+                .author("Application Services Team")
+                .version(env!("CARGO_PKG_VERSION"))
+                .subcommands(COMMANDS.iter().map(|(key_word, (title, _cmd))| {
+                    SubCommand::with_name(key_word).about(*title)
+                })),
         )
         .get_matches();
 
-    match map.get(matches.subcommand().0) {
-        Some(val) => spawn(val.1),
-        None => run_default(),
+    if let Some(matches) = matches.subcommand_matches("asdev") {
+        match map.get(matches.subcommand().0) {
+            Some(val) => spawn(val.1),
+            None => run_default(),
+        }
+    } else {
+        run_default()
     }
 }
 
