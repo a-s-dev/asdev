@@ -18,24 +18,12 @@ const COMMANDS: &[(&str, (&str, &str))] = &[
         ("Run all Rust tests", "sh ./automation/all_rust_tests.sh"),
     ),
     (
-        "verify_desktop",
+        "verify_env",
         (
-            "Verify Desktop Environment",
-            "sh ./libs/verify-desktop-environment.sh",
-        ),
-    ),
-    (
-        "verify_android",
-        (
-            "Verify Android Environment",
-            "sh ./libs/verify-android-environment.sh",
-        ),
-    ),
-    (
-        "verify_ios",
-        (
-            "Verify iOS Environment",
-            "sh ./libs/verify-ios-environment.sh",
+            "Verify your development environment",
+            "sh ./libs/verify-desktop-environment.sh ;
+            sh ./libs/verify-android-environment.sh ;
+            sh ./libs/verify-ios-environment.sh",
         ),
     ),
     (
@@ -131,21 +119,46 @@ fn run_default() {
     spawn(cmd.1);
 }
 
-fn spawn(cmd: &str) {
-    println!("Executing: {}", cmd);
-    let mut split = cmd.split_whitespace();
+struct CommandOutput {
+    command: String,
+    status: process::ExitStatus,
+}
 
-    let output = Command::new(split.next().unwrap())
-        .args(split)
-        .stdout(process::Stdio::inherit())
-        .stderr(process::Stdio::inherit())
-        .spawn()
-        .unwrap()
-        .wait_with_output()
-        .unwrap();
-    if let Some(code) = output.status.code() {
-        std::process::exit(code);
-    } else if !output.status.success() {
-        std::process::exit(-1);
+fn spawn(cmd: &str) {
+    let commands: Vec<&str> = cmd.split_terminator(';').collect();
+    let mut threads = Vec::new();
+    commands.iter().for_each(|cmd| {
+        let cmd = cmd.to_string();
+        threads.push(std::thread::spawn(move || {
+            let mut split = cmd.split_whitespace();
+
+            let output = Command::new(split.next().unwrap())
+                .args(split)
+                .stdout(process::Stdio::inherit())
+                .stderr(process::Stdio::inherit())
+                .spawn()
+                .unwrap()
+                .wait_with_output()
+                .unwrap();
+            CommandOutput {
+                command: cmd.to_string(),
+                status: output.status,
+            }
+        }));
+    });
+    let mut outputs = Vec::new();
+    for thread in threads {
+        outputs.push(thread.join().unwrap());
+    }
+    println!("\n==========  Report  ==========\n");
+    outputs.iter().for_each(|command_output| {
+        if command_output.status.success() {
+            println!("{} ✅\n", command_output.command.trim());
+        } else {
+            println!("{} ❌\n", command_output.command.trim());
+        }
+    });
+    if let Some(output) = outputs.iter().find(|output| !output.status.success()) {
+        std::process::exit(output.status.code().unwrap());
     }
 }
