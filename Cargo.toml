@@ -1,6 +1,6 @@
 [package]
 name = "asdev"
-version = "0.1.5"
+version = "0.1.6-alpha.0"
 authors = ["vladikoff"]
 edition = "2018"
 license = "MPL-2.0"
