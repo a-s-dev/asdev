@@ -146,8 +146,14 @@ fn setup_default_dialog() -> Dialog {
             name: "regen-protobufs",
             description: "Regenerate protobuf files".to_string(),
             command: Some("cargo run --bin protobuf-gen tools/protobuf_files.toml"),
-            nested: None
-        }
+            nested: None,
+        },
+        DialogItem {
+            name: "help",
+            nested: None,
+            command: Some("cargo asdev -h"),
+            description: "See all CLI options".to_string(),
+        },
     ];
 
     Dialog {
