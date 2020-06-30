@@ -125,6 +125,12 @@ fn setup_default_dialog() -> Dialog {
             command: None,
         },
         DialogItem {
+            name: "regen-dependencies",
+            nested: None,
+            command: Some("sh ./tools/regenerate_dependency_summaries.sh"),
+            description: "Regenerate dependency summaries".to_string(),
+        },
+        DialogItem {
             name: "lint_bash",
             nested: None,
             command: Some("sh ./automation/lint_bash_scripts.sh"),
