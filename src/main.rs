@@ -136,6 +136,12 @@ fn setup_default_dialog() -> Dialog {
             command: Some("python3 ./automation/cargo-update-pr.py"),
             nested: None,
         },
+        DialogItem {
+            name: "regen-protobufs",
+            description: "Regenerate protobuf files".to_string(),
+            command: Some("cargo run --bin protobuf-gen tools/protobuf_files.toml"),
+            nested: None
+        }
     ];
 
     Dialog {
