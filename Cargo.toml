@@ -16,6 +16,7 @@ clap = "2.33"
 anyhow = "1.0"
 serde = "1.0"
 serde_yaml = "0.8"
+update-notifier = "0.1.9"
 
 [[bin]]
 name = "cargo-asdev"

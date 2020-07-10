@@ -202,6 +202,14 @@ fn setup_default_dialog() -> Dialog {
 }
 
 fn main() {
+    // Notify the consumer of an update once a week
+    // We 'ok' it because we want it to fail silently if it fails
+    update_notifier::check_version(
+        env!("CARGO_PKG_NAME"),
+        env!("CARGO_PKG_VERSION"),
+        std::time::Duration::from_secs(7 * 24 * 60 * 60),
+    )
+    .ok();
     let default_dialog = setup_default_dialog();
 
     let empty_dialog = Dialog {
