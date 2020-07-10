@@ -100,7 +100,7 @@ fn setup_default_dialog() -> Dialog {
             name: "release",
             description: "Prepare a release".to_string(),
             nested: Some(Dialog {
-                prompt: "What type of release would like to prepare?",
+                prompt: "What type of release would you like to prepare?",
                 items: vec![
                     DialogItem {
                         name: "release-major",
@@ -129,6 +129,45 @@ fn setup_default_dialog() -> Dialog {
             nested: None,
             command: Some("sh ./tools/regenerate_dependency_summaries.sh"),
             description: "Regenerate dependency summaries".to_string(),
+        },
+        DialogItem {
+            name: "smoke-test",
+            nested: Some(Dialog {
+                prompt: "What would you like to smoke test?",
+                items: vec![
+                    DialogItem {
+                        name: "smoke-all",
+                        command: Some(
+                            "python3 ./automation/smoke-test-android-components.py ; 
+                        python3 ./automation/smoke-test-fenix.py ; 
+                        python3 ./automation/smoke-test-firefox-ios.py",
+                        ),
+                        description: "Smoke test all of Android Components, Fenix and Firefox-ios"
+                            .to_string(),
+                        nested: None,
+                    },
+                    DialogItem {
+                        name: "smoke-fenix",
+                        command: Some("python3 ./automation/smoke-test-fenix.py"),
+                        description: "Smoke test Fenix".to_string(),
+                        nested: None,
+                    },
+                    DialogItem {
+                        name: "smoke-android",
+                        command: Some("python3 ./automation/smoke-test-android-components.py"),
+                        description: "Smoke test Android Components".to_string(),
+                        nested: None,
+                    },
+                    DialogItem {
+                        name: "smoke-ios",
+                        command: Some("python3 ./automation/smoke-test-firefox-ios.py"),
+                        description: "Smoke test Firefox-ios".to_string(),
+                        nested: None,
+                    },
+                ],
+            }),
+            command: None,
+            description: "Smoke test".to_string(),
         },
         DialogItem {
             name: "lint_bash",
